@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+  <control 
+    namespace="Develop1" 
+    constructor="PicklistPCF" 
+    version="0.5.0" 
+    display-name-key="Picklist Filtered" 
+    description-key="Picklist options can be trimmed" 
+    control-type="standard"
+    preview-image="imgs/preview.png">
+    <property name="picklistField" display-name-key="Picklist Field" description-key="Picklist Field to filter" of-type="OptionSet" usage="bound" required="true" />
+    <property name="filtering" display-name-key="Filtered Options" description-key="Comma Separated list of integer option values e.g. 1,2,3" of-type="SingleLine.Text" usage="input" required="true" />
+    <!-- 
+      Property node's of-type attribute can be of-type-group attribute. 
+      Example:
+      <type-group name="numbers">
+        <type>Whole.None</type>
+        <type>Currency</type>
+        <type>FP</type>
+        <type>Decimal</type>
+      </type-group>
+      <property name="sampleProperty" display-name-key="Property_Display_Key" description-key="Property_Desc_Key" of-type-group="numbers" usage="bound" required="true" />
+    -->
+    <resources>
+      <code path="index.ts" order="1"/>
+   
+      <!-- UNCOMMENT TO ADD MORE RESOURCES
+      <css path="css/PicklistPCF.css" order="1" />
+      <resx path="strings/PicklistPCF.1033.resx" version="1.0.0" />
+      -->
+    </resources>
+    <!-- UNCOMMENT TO ENABLE THE SPECIFIED API
+    <feature-usage>
+      <uses-feature name="Device.captureAudio" required="true" />
+      <uses-feature name="Device.captureImage" required="true" />
+      <uses-feature name="Device.captureVideo" required="true" />
+      <uses-feature name="Device.getBarcodeValue" required="true" />
+      <uses-feature name="Device.getCurrentPosition" required="true" />
+      <uses-feature name="Device.pickFile" required="true" />
+      <uses-feature name="Utility" required="true" />
+      <uses-feature name="WebAPI" required="true" />
+    </feature-usage>
+    -->
+  </control>
+</manifest>
