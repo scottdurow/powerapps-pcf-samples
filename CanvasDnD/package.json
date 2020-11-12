@@ -1,0 +1,28 @@
+{
+  "name": "canvasdnd",
+  "version": "1.0.0",
+  "description": "Canvas App PCF Drag-n-Drop control",
+  "scripts": {
+    "build": "pcf-scripts build",
+    "clean": "pcf-scripts clean",
+    "rebuild": "pcf-scripts rebuild",
+    "start": "pcf-scripts start"
+  },
+  "dependencies": {
+    "@types/dragula": "^3.7.0",
+    "@types/node": "^10.12.18",
+    "@types/powerapps-component-framework": "^1.2.0",
+    "dragula": "^3.7.3"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
+    "eslint": "^7.13.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.21.5",
+    "pcf-scripts": "^1",
+    "pcf-start": "^1",
+    "prettier": "2.1.2"
+  }
+}
