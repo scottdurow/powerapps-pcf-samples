@@ -60,10 +60,10 @@
 </resheader>
 
 <data name="Control_Display_Name_Key" xml:space="preserve">
-    <value>PCF Dataset</value>
+    <value>CanvasApp Drag'n'Drop</value>
 </data>
 <data name="Control_Description_Key" xml:space="preserve">
-    <value>PCF Dataset Description</value>
+    <value>Adds drag and drop support to CanvasApp collections</value>
 </data>
 
 <data name="Property_Display_Key_DropZoneID" xml:space="preserve">
@@ -137,7 +137,7 @@
 </data>
 
 <data name="Dataset_Label" xml:space="preserve">
-    <value>Awesome PCF Dataset</value>
+    <value>Items</value>
 </data>
 
 
