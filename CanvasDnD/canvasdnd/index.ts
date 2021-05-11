@@ -1,6 +1,8 @@
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 import DataSetInterfaces = ComponentFramework.PropertyHelper.DataSetApi;
 import * as dragula from "dragula";
+import { DatasetStateManager } from "./DatasetStateManager";
+import { PCFPropertyBagStateManager } from "./PropertyBagState";
 type DataSet = ComponentFramework.PropertyTypes.DataSet;
 const RECORD_ID_ATTRIBUTE = "canvasdnd-item-id";
 
@@ -15,6 +17,17 @@ export class canvasdnd implements ComponentFramework.StandardControl<IInputs, IO
   private droppedSource = "";
   private droppedBeforeId = "";
   private listContainer: HTMLElement;
+  private datasetStateManager = new DatasetStateManager();
+  private propertyStateManager = new PCFPropertyBagStateManager(() => null, false);
+  private propertiesTriggerRender = [
+    "DropZoneID",
+    "OtherDropZoneIDs",
+    "IsMasterZone",
+    "ItemBackgroundColour",
+    "ItemFontSize",
+    "ItemFontColour",
+  ];
+
   notifyOutputChanged: () => void;
   /**
    * Used to initialize the control instance. Controls can kick off remote server calls and other initialization actions here.
@@ -68,10 +81,27 @@ export class canvasdnd implements ComponentFramework.StandardControl<IInputs, IO
    * @param context The entire property bag available to control via Context Object; It contains values as set up by the customizer mapped to names defined in the manifest, as well as utility functions
    */
   public updateView(context: ComponentFramework.Context<IInputs>): void {
+    // Determine what has changed
+    const datasetChanged = this.datasetStateManager.setData(context.parameters.items);
+    const propertiesChanged = this.propertyStateManager.getInboundChangedProperties(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      context.parameters as Record<string, any>,
+      context.updatedProperties,
+    );
+    // If nothing has changed, then exit
+    if (propertiesChanged.length == 0 && !datasetChanged.dataHasChanged) {
+      return;
+    }
+
+    console.debug(`DnD: updateView ${context.parameters.DropZoneID.raw}`, datasetChanged, propertiesChanged);
     this.contextObj = context;
 
     // If we don't have a drop zone or the id has changed
-    if (!this.listContainer || this.previousDropZoneId != this.contextObj.parameters.DropZoneID.raw) {
+    if (!this.listContainer || propertiesChanged.indexOf("DropZoneID") > -1) {
+      if (this.listContainer) {
+        // Remove old list container
+        this.mainContainer.removeChild(this.listContainer);
+      }
       this.previousDropZoneId = this.contextObj.parameters.DropZoneID.raw;
       this.listContainer = document.createElement("ul");
       this.listContainer.id = this.contextObj.parameters.DropZoneID.raw as string;
@@ -82,7 +112,11 @@ export class canvasdnd implements ComponentFramework.StandardControl<IInputs, IO
     // Set height
     this.listContainer.style.height = context.mode.allocatedHeight + "px";
 
-    if (!context.parameters.items.loading) {
+    const updateItems =
+      datasetChanged.dataHasChanged ||
+      propertiesChanged.filter((value) => this.propertiesTriggerRender.includes(value));
+
+    if (!context.parameters.items.loading && updateItems) {
       // Get sorted columns on collection provided as the dataset
       const fieldsOnDataset = this.getSortedFieldsOnDataset(context);
       if (!fieldsOnDataset || fieldsOnDataset.length === 0) {
@@ -90,6 +124,7 @@ export class canvasdnd implements ComponentFramework.StandardControl<IInputs, IO
       }
 
       // Remove existing items
+      //console.debug("DnD: Remove previous items");
       while (this.listContainer.firstChild && this.listContainer.firstChild.parentNode) {
         this.listContainer.firstChild.parentNode.removeChild(this.listContainer.firstChild);
       }
@@ -100,13 +135,32 @@ export class canvasdnd implements ComponentFramework.StandardControl<IInputs, IO
       // Get the other containers - we need to do this each update as the other drop zones may not have been build the last time
       const containers = context.parameters.OtherDropZoneIDs.raw?.split(",");
       const containerElements: HTMLElement[] = [this.listContainer];
-      for (const container of containers) {
-        const containerElement = document.getElementById(container.trim()) as HTMLElement;
-        containerElements.push(containerElement);
-      }
-      this.drake.containers = containerElements;
+
+      // Since the other containers may not be created yet, we setup drake after a timeout
+      // To the app time to create the containers
+      this.scheduleHooks(containers, containerElements);
     }
   }
+  private scheduleHooks(containers: string[], containerElements: HTMLElement[]) {
+    const hooksAdded = this.addDrakeHooks(containers, containerElements);
+    if (!hooksAdded) {
+      setTimeout(() => {
+        this.scheduleHooks(containers, containerElements);
+      }, 1000);
+    }
+  }
+  private addDrakeHooks(containers: string[], containerElements: HTMLElement[]): boolean {
+    for (const container of containers) {
+      const containerElement = document.getElementById(container.trim()) as HTMLElement;
+      // Is the drop zone found?
+      if (!containerElement) return false;
+      containerElements.push(containerElement);
+    }
+    this.drake.containers = containerElements;
+    console.debug("DnD: Drag hooks added", containerElements);
+    return true;
+  }
+
   /**
    * It is called by the framework prior to a control receiving new data.
    * @returns an object based on nomenclature defined in manifest, expecting object[s] for property marked as â€œboundâ€ or â€œoutputâ€
