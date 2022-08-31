@@ -135,6 +135,9 @@
 <data name="Property_Description_Key_ItemFontColour" xml:space="preserve">
     <value>The font colour of the item text</value>
 </data>
+<data name="Property_Description_Key_ItemKeyName" xml:space="preserve">
+  <value>The column to use as the item key when setting the Dropped Id property</value>
+</data>
 
 <data name="Dataset_Label" xml:space="preserve">
     <value>Items</value>

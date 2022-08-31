@@ -11,6 +11,7 @@
     <Name>CanvasDnD</Name>
     <ProjectGuid>cbf9b0bc-6e54-4fa4-8735-1f5cb29e215f</ProjectGuid>
     <OutputPath>$(MSBuildThisFileDirectory)out\controls</OutputPath>
+    
   </PropertyGroup>
 
   <PropertyGroup>

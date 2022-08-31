@@ -6,7 +6,10 @@
     "build": "pcf-scripts build",
     "clean": "pcf-scripts clean",
     "rebuild": "pcf-scripts rebuild",
-    "start": "pcf-scripts start"
+    "start": "pcf-scripts start",
+    "refreshTypes": "pcf-scripts refreshTypes",
+    "lint": "eslint canvasdnd --ext .ts,.tsx",
+    "lint:fix": "npm run lint -- --fix"
   },
   "dependencies": {
     "@types/dragula": "^3.7.0",
@@ -21,8 +24,10 @@
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-sonarjs": "^0.15.0",
     "pcf-scripts": "^1",
     "pcf-start": "^1",
-    "prettier": "2.1.2"
+    "prettier": "2.1.2",
+    "typescript": "^4.8.2"
   }
 }
